@@ -1337,10 +1337,18 @@ function renderExercises() {
     }
     // Trouver le premier slot vide pour le bouton d'ajout
     const firstEmpty = [0,1,2].find(i => !photos[i]);
-    if (firstEmpty !== undefined) {
+    const hasVideo = !!ex.videoId;
+    const hasPhoto = photos.some(p => !!p);
+    if (firstEmpty !== undefined && !hasVideo && !hasPhoto) {
       photoSlots.push(`
         <div class="photo-slot" id="slot_${ex.id}_${firstEmpty}" style="display:block;height:auto;">
           <button class="add-photo-btn" onclick="document.getElementById('fileinput_${ex.id}_${firstEmpty}').click()">📸 Ajouter une photo</button>
+          <input type="file" id="fileinput_${ex.id}_${firstEmpty}" accept="image/*" style="display:none" onchange="addPhoto('${ex.id}',${firstEmpty},this)">
+        </div>
+      `);
+    } else if (firstEmpty !== undefined && (hasVideo || hasPhoto)) {
+      photoSlots.push(`
+        <div class="photo-slot" id="slot_${ex.id}_${firstEmpty}" style="display:none;">
           <input type="file" id="fileinput_${ex.id}_${firstEmpty}" accept="image/*" style="display:none" onchange="addPhoto('${ex.id}',${firstEmpty},this)">
         </div>
       `);
