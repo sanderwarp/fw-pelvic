@@ -58,7 +58,7 @@
   }
   .logo {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(28px, 8vw, 52px);
+    font-size: clamp(32px, 10vw, 62px);
     letter-spacing: 2px;
     color: var(--gold);
     text-align: center;
@@ -745,6 +745,11 @@
   ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── WORKOUT MODE (header + nav cachés) ── */
+  body.workout-mode .app-header { display: none; }
+  body.workout-mode .bottom-nav { display: none; }
+  body.workout-mode { padding-bottom: var(--safe-bottom); }
 </style>
 </head>
 <body>
@@ -776,7 +781,7 @@
     </button>
     <button class="tab-btn" id="tabB" onclick="switchDay('B')" style="height:auto;padding:0;display:block;overflow:hidden;">
       <div style="position:relative;display:block;width:100%;">
-        <img src="images/img03.png" style="width:100%;height:140px;object-fit:cover;object-position:center 40%;display:block;border-radius:12px;">
+        <img src="images/img12.png" style="width:100%;height:140px;object-fit:cover;object-position:center 40%;display:block;border-radius:12px;">
         <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(10,10,15,0.55),rgba(10,10,15,0.15));border-radius:12px;"></div>
         <div class="tab-content" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2;">Jours impairs<br><small>Dos & Gainage</small></div>
       </div>
@@ -1153,6 +1158,7 @@ function updateHeader() {
 // ══════════════════════════════════════
 
 function switchDay(day, save = true) {
+  document.body.classList.add('workout-mode');
   state.currentDay = day;
   if (save) saveState();
 
