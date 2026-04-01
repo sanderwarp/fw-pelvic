@@ -775,6 +775,22 @@
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
   .pulsing { animation: pulse 1s infinite; }
 
+  /* ── VIDEO EMBED ── */
+  .ex-video {
+    width: 100%;
+    aspect-ratio: 16/9;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+  }
+  .ex-video iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+
   /* ── SCROLLBAR ── */
   ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -1098,6 +1114,7 @@ const EXERCISES = {
       type: 'reps',
       baseReps: 8,
       sides: 2,
+      videoId: 'vtwhC3tfVow',
       tips: [
         '🔑 Bassin <strong>horizontal</strong> — ne penche pas d\'un côté',
         '⏱ Extension lente : 3 sec aller, 3 sec retour',
@@ -1343,6 +1360,7 @@ function renderExercises() {
       </div>
       <div class="ex-body">
         <div class="ex-photos">${photoSlots.join('')}</div>
+        ${ex.videoId ? `<div class="ex-video"><iframe src="https://www.youtube.com/embed/${ex.videoId}?playsinline=1&rel=0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe></div>` : ''}
         <div class="ex-tips">${ex.tips.map(t => `<p>${t}</p>`).join('')}</div>
         <div class="ex-controls" id="ctrl_${ex.id}">
           ${ex.type === 'timer' ? renderTimer(ex.id, actualTime, sets) : renderReps(ex.id, actualReps, sets)}
