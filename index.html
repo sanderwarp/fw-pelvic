@@ -1387,7 +1387,7 @@ function renderTimer(id, duration, sets) {
         <svg width="120" height="120" viewBox="0 0 120 120">
           <circle class="bg-ring" cx="60" cy="60" r="${r}"/>
           <circle class="prog-ring" id="ring_${id}" cx="60" cy="60" r="${r}"
-            stroke-dasharray="${circ}" stroke-dashoffset="0"/>
+            stroke-dasharray="${circ}" stroke-dashoffset="${circ}"/>
         </svg>
         <div class="timer-display" id="tdisp_wrap_${id}">
           <span id="tdisp_${id}">${formatTime(duration)}</span>
@@ -1482,9 +1482,9 @@ function resetTimer(id) {
 function updateRing(id) {
   const t = timers[id];
   if (!t) return;
-  const r = 34; const circ = 2 * Math.PI * r;
-  const ratio = t.remaining / t.duration;
-  const offset = circ * (1 - ratio);
+  const r = 54; const circ = 2 * Math.PI * r;
+  // offset=circ au début (cercle vide), offset=0 à la fin (cercle plein)
+  const offset = circ * (t.remaining / t.duration);
   const ring = document.getElementById(`ring_${id}`);
   if (ring) ring.style.strokeDashoffset = offset;
 }
