@@ -1122,30 +1122,32 @@ const EXERCISES = {
       meta: 'Core anti-rotation • Transverse'
     },
     {
-      id: 'goodmorning',
-      name: 'Good Morning',
+      id: 'hipflextriangle',
+      name: 'Hip Flexor Triangle',
       type: 'reps',
-      baseReps: 12,
+      baseReps: 10,
+      fixedSets: 3,
       sides: 1,
       tips: [
-        '🔑 Dos <strong>neutre</strong> — pas arrondi, pas hyper-cambré',
-        '💪 Pousse les hanches vers l\'arrière, pas les genoux vers le bas',
-        '⚠️ Commence sans charge, puis barre légère'
+        '🔑 Contrôle le mouvement — pas d\'élan',
+        '💪 Engage le core pendant tout l\'exercice',
+        '✅ Amplitude complète à chaque répétition'
       ],
-      meta: 'Ischio-jambiers • Extenseurs du dos'
+      meta: 'Fléchisseurs de hanche • Psoas'
     },
     {
-      id: 'facepull',
-      name: 'Face Pull',
-      type: 'reps',
-      baseReps: 15,
+      id: 'setpoint',
+      name: 'Set Point',
+      type: 'timer',
+      baseDuration: 30,
+      fixedSets: 5,
       sides: 1,
       tips: [
-        '🔑 Tire vers le <strong>visage</strong>, coudes à hauteur d\'épaule',
-        '✅ Rotation externe des épaules en fin de mouvement',
-        '💪 Idéal en superset avec l\'Elastic Row du jour A'
+        '🔑 Maintiens la position de manière stable',
+        '💪 Respiration contrôlée pendant toute la durée',
+        '✅ Concentre-toi sur la qualité de la posture'
       ],
-      meta: 'Deltoïdes post. • Rotateurs externes'
+      meta: 'Stabilité posturale • Core'
     }
   ]
 };
@@ -1279,14 +1281,15 @@ function renderExercises() {
     const isDone = !!done[ex.id];
     const actualReps = ex.type === 'reps' ? ex.baseReps + prog.repsAdd : null;
     const actualTime = ex.type === 'timer' ? ex.baseDuration + prog.timeAdd : null;
+    const sets = ex.fixedSets || prog.sets;
 
     let metaStr = '';
     if (ex.type === 'timer') {
       const sideStr = ex.sides === 2 ? ' / côté' : '';
-      metaStr = `⏱ ${formatTime(actualTime)}${sideStr} × ${prog.sets} séries`;
+      metaStr = `⏱ ${formatTime(actualTime)}${sideStr} × ${sets} séries`;
     } else {
       const sideStr = ex.sides === 2 ? ' / côté' : '';
-      metaStr = `🔁 ${actualReps} reps${sideStr}${ex.holdNote ? ' ' + ex.holdNote : ''} × ${prog.sets} séries`;
+      metaStr = `🔁 ${actualReps} reps${sideStr}${ex.holdNote ? ' ' + ex.holdNote : ''} × ${sets} séries`;
     }
 
     const photos = state.photos[ex.id] || [];
@@ -1332,7 +1335,7 @@ function renderExercises() {
         <div class="ex-photos">${photoSlots.join('')}</div>
         <div class="ex-tips">${ex.tips.map(t => `<p>${t}</p>`).join('')}</div>
         <div class="ex-controls" id="ctrl_${ex.id}">
-          ${ex.type === 'timer' ? renderTimer(ex.id, actualTime) : renderReps(ex.id, actualReps, prog.sets)}
+          ${ex.type === 'timer' ? renderTimer(ex.id, actualTime) : renderReps(ex.id, actualReps, sets)}
         </div>
         <button class="done-btn" onclick="toggleDone('${ex.id}')">
           ${isDone ? '✓ Exercice terminé' : 'Marquer comme terminé'}
