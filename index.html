@@ -6,6 +6,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="FW Fitness">
+<link rel="apple-touch-icon" href="images/img01.png">
+<link rel="apple-touch-icon" sizes="180x180" href="images/img01.png">
+<link rel="icon" type="image/png" href="images/img01.png">
 <meta name="theme-color" content="#0a0a0f">
 <title>Frozen Warriors — Fitness</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -868,7 +871,7 @@
     <button class="tab-btn" id="tabB" onclick="switchDay('B')" style="height:150px;padding:0;display:block;overflow:hidden;position:relative;">
       <img src="images/img12.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 30%;border-radius:12px;">
       <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(10,10,15,0.55),rgba(10,10,15,0.15));border-radius:12px;"></div>
-      <div class="tab-content" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2;">Jours impairs<br><small>Dos & Gainage</small></div>
+      <div class="tab-content" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2;">Jours impairs<br><small>Psoas & Gainage</small></div>
     </button>
   </div>
 
@@ -1256,9 +1259,9 @@ function switchDay(day, save = true) {
     document.getElementById('sectionTitleB').textContent = 'PELVIC TILT';
     document.getElementById('sectionSub').textContent = 'Correction posturale + renforcement abdominal';
   } else {
-    document.getElementById('sectionTitleA').textContent = 'DOS · TRANSVERSE';
+    document.getElementById('sectionTitleA').textContent = 'PSOAS · TRANSVERSE';
     document.getElementById('sectionTitleB').textContent = '& GAINAGE LATÉRAL';
-    document.getElementById('sectionSub').textContent = 'Renforcement postérieur + stabilité du tronc';
+    document.getElementById('sectionSub').textContent = 'Relâchement du psoas + stabilité du tronc';
   }
 
   renderExercises();
@@ -1597,7 +1600,7 @@ function showCompletion() {
 
   const prog = getProgression(getWeekNumber());
   document.getElementById('modalSub').textContent =
-    `Séance ${state.currentDay === 'A' ? 'Bassin & Core' : 'Dos & Gainage'} complète. Phase : ${prog.label}. Continue comme ça !`;
+    `Séance ${state.currentDay === 'A' ? 'Bassin & Core' : 'Psoas & Gainage'} complète. Phase : ${prog.label}. Continue comme ça !`;
   document.getElementById('modal').classList.add('show');
 }
 
