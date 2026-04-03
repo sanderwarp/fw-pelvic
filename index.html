@@ -465,6 +465,10 @@
     border-color: var(--green);
     color: #000;
   }
+  .serie-g { border-color: var(--ice-dim); color: var(--ice); }
+  .serie-g.done { background: var(--green); border-color: var(--green); color: #000; }
+  .serie-d { border-color: var(--gold); color: var(--gold-light); }
+  .serie-d.done { background: var(--green); border-color: var(--green); color: #000; }
 
   /* Done button */
   .done-btn {
@@ -1224,6 +1228,15 @@ function loadState() {
   try {
     const s = JSON.parse(localStorage.getItem('fw_state') || '{}');
     state = { ...state, ...s };
+
+    // Auto-reset si on est un nouveau jour
+    const today = new Date().toISOString().split('T')[0];
+    if (state.lastSessionDate !== today) {
+      // Nouveau jour : on efface les coches des deux jours
+      state.doneExercises = { A: {}, B: {} };
+      state.lastSessionDate = today;
+      saveState();
+    }
   } catch(e) {}
 }
 function saveState() {
@@ -1373,7 +1386,7 @@ function renderExercises() {
         ${ex.videoId ? `<div class="ex-video"><iframe src="https://www.youtube.com/embed/${ex.videoId}?playsinline=1&rel=0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe></div>` : ''}
         <div class="ex-tips">${ex.tips.map(t => `<p>${t}</p>`).join('')}</div>
         <div class="ex-controls" id="ctrl_${ex.id}">
-          ${ex.type === 'timer' ? renderTimer(ex.id, actualTime, sets) : renderReps(ex.id, actualReps, sets)}
+          ${ex.type === 'timer' ? renderTimer(ex.id, actualTime, sets, ex.sides) : renderReps(ex.id, actualReps, sets, ex.sides)}
         </div>
         <button class="done-btn" onclick="toggleDone('${ex.id}')">
           ${isDone ? '✓ Exercice terminé' : 'Marquer comme terminé'}
@@ -1404,11 +1417,24 @@ function formatTime(sec) {
   return m > 0 ? `${m}:${String(s).padStart(2,'0')}` : `${s}s`;
 }
 
-function renderTimer(id, duration, sets) {
+function renderTimer(id, duration, sets, sides) {
   const r = 54; const circ = 2 * Math.PI * r;
-  const seriesBtns = sets ? Array.from({length: sets}, (_, i) => `
-    <button class="serie-btn" id="serie_${id}_${i}" onclick="toggleSerie('${id}',${i},${sets})">S${i+1}</button>
-  `).join('') : '';
+  const bilateral = sides === 2;
+  const total = sets ? (bilateral ? sets * 2 : sets) : 0;
+  let seriesBtns = '';
+  if (sets) {
+    if (bilateral) {
+      for (let s = 0; s < sets; s++) {
+        const idxG = s * 2, idxD = s * 2 + 1;
+        seriesBtns += `<button class="serie-btn serie-g" id="serie_${id}_${idxG}" onclick="toggleSerie('${id}',${idxG},${total})">SG${s+1}</button>`;
+        seriesBtns += `<button class="serie-btn serie-d" id="serie_${id}_${idxD}" onclick="toggleSerie('${id}',${idxD},${total})">SD${s+1}</button>`;
+      }
+    } else {
+      for (let i = 0; i < sets; i++) {
+        seriesBtns += `<button class="serie-btn" id="serie_${id}_${i}" onclick="toggleSerie('${id}',${i},${total})">S${i+1}</button>`;
+      }
+    }
+  }
   return `
     <div class="timer-wrap">
       <div class="timer-ring" id="tbtn_${id}" onclick="toggleTimer('${id}')">
@@ -1422,7 +1448,7 @@ function renderTimer(id, duration, sets) {
           <span class="timer-status" id="tstatus_${id}">APPUYER</span>
         </div>
       </div>
-      ${sets ? `<div class="series-checks">${seriesBtns}</div>` : ''}
+      ${total ? `<div class="series-checks">${seriesBtns}</div>` : ''}
       <button class="timer-reset-btn" onclick="resetTimer('${id}')">↺ Recommencer</button>
     </div>
   `;
@@ -1523,14 +1549,27 @@ function updateRing(id) {
 
 const seriesState = {};
 
-function renderReps(id, goal, sets) {
-  seriesState[id] = { done: 0, total: sets };
-  const btns = Array.from({length: sets}, (_, i) => `
-    <button class="serie-btn" id="serie_${id}_${i}" onclick="toggleSerie('${id}',${i},${sets})">S${i+1}</button>
-  `).join('');
+function renderReps(id, goal, sets, sides) {
+  const bilateral = sides === 2;
+  const total = bilateral ? sets * 2 : sets;
+  seriesState[id] = { done: 0, total };
+  let btns = '';
+  if (bilateral) {
+    // SG1, SD1, SG2, SD2...
+    for (let s = 0; s < sets; s++) {
+      const idxG = s * 2;
+      const idxD = s * 2 + 1;
+      btns += `<button class="serie-btn serie-g" id="serie_${id}_${idxG}" onclick="toggleSerie('${id}',${idxG},${total})">SG${s+1}</button>`;
+      btns += `<button class="serie-btn serie-d" id="serie_${id}_${idxD}" onclick="toggleSerie('${id}',${idxD},${total})">SD${s+1}</button>`;
+    }
+  } else {
+    for (let i = 0; i < sets; i++) {
+      btns += `<button class="serie-btn" id="serie_${id}_${i}" onclick="toggleSerie('${id}',${i},${sets})">S${i+1}</button>`;
+    }
+  }
   return `
     <div class="series-wrap">
-      <div class="series-label">${goal} reps par série</div>
+      <div class="series-label">${goal} reps${bilateral ? ' / côté' : ''} par série</div>
       <div class="series-checks">${btns}</div>
     </div>
   `;
@@ -1542,7 +1581,6 @@ function toggleSerie(id, idx, total) {
   const doneCnt = document.querySelectorAll(`[id^="serie_${id}_"].done`).length;
   seriesState[id].done = doneCnt;
   if (doneCnt >= total) {
-    // Auto-cocher l'exercice comme terminé
     const card = document.getElementById(`card_${id}`);
     if (card && !card.classList.contains('done')) {
       setTimeout(() => toggleDone(id, new Event('click')), 400);
